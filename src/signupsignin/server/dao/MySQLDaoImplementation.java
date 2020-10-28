@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package signupsignin.server.Dao;
+package signupsignin.server.dao;
 
 import interfaces.Signable;
 import java.sql.Connection;
@@ -22,29 +22,26 @@ public class MySQLDaoImplementation implements Signable {
     private ResultSet rs;
     private Connection con;
     private final String searchUser = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
-    
 
     @Override
     public User signIn(User user) {
-        try {   
 
-    public void doQuery() {
         try {
             // Obtengo una conexión desde el pool de conexiones.
             con = ConnectionPool.getConnection();
- 
+
             //Establezco el preparedstatement y ejecuto la query.
             ps = con.prepareStatement(searchUser);
             ps.setString(1, user.getLogin());
             ps.setString(2, user.getPassword());
-            ResultSet rs= ps.executeQuery();
-            
+            ResultSet rs = ps.executeQuery();
+
             //Guardo en el objeto User el nombre y el ultimo acceso para mostrar en dashboard
             while (rs.next()) {
                 user.setFullName(rs.getString("FULLNAME"));
                 user.setLastAccess(rs.getDate("LASTACCESS"));
-            }         
-        } catch(SQLException sqlException) {
+            }
+        } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         } finally {
             try {
@@ -64,7 +61,7 @@ public class MySQLDaoImplementation implements Signable {
                 sqlException.printStackTrace();
             }
         }
-        
+
         //Devuelvo user
         return user;
     }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package signupsignin.server.Dao;
+package signupsignin.server.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
