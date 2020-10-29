@@ -7,15 +7,13 @@ package signupsignin.server;
 
 import signupsignin.server.dao.DaoFactory;
 import exceptions.ErrorConnectingDatabaseException;
-import exceptions.ErrorConnectingServerException;
 import exceptions.QueryException;
 import exceptions.UserAlreadyExistException;
 import interfaces.Signable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import message.Message;
@@ -70,7 +68,12 @@ public class Worker extends Thread {
                 break;
 
             }
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject("Hi Client ");
+            oos.close();
+
             ois.close();
+            this.socket.close();
         } catch (IOException ex) {
             Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
