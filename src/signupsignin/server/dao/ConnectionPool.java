@@ -31,6 +31,7 @@ public class ConnectionPool {
             ds.setUsername(rb.getString("user"));
             ds.setPassword(rb.getString("password"));
             ds.setUrl(rb.getString("host"));
+            
             //Establecer parametros adecuados
             ds.setMaxTotal(10);
             ds.setMaxWaitMillis(3000);

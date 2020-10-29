@@ -28,6 +28,7 @@ public class MySQLDaoImplementation implements Signable {
     private ResultSet rs;
     private Connection con;
     private final String searchUser = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
+    private final String checkIfUserExists = "SELECT * FROM USER WHERE LOGIN=? OR EMAIL=?";
     private final String insertUser = "INSERT INTO user(login,email,fullname,password,status,privilege) VALUES(?,?,?,?,?,?)";
 
     @Override
@@ -53,6 +54,7 @@ public class MySQLDaoImplementation implements Signable {
             this.closeConnection();
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             throw new QueryException();
         }
         return user;
@@ -60,13 +62,9 @@ public class MySQLDaoImplementation implements Signable {
 
     private void checkifUserExists(User user) throws SQLException, UserAlreadyExistException {
 
-        this.ps = con.prepareStatement(this.insertUser);
+        this.ps = con.prepareStatement(this.checkIfUserExists);
         this.ps.setString(1, user.getLogin());
         this.ps.setString(2, user.getEmail());
-        this.ps.setString(3, user.getFullName());
-        this.ps.setString(4, user.getPassword());
-        this.ps.setString(5, user.getStatus().toString());
-        this.ps.setString(6, user.getPrivilege().toString());
         this.rs = this.ps.executeQuery();
 
         while (rs.next()) {
