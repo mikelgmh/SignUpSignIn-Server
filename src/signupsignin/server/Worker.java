@@ -69,9 +69,8 @@ public class Worker extends Thread {
 
             }
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            oos.writeObject("Hi Client ");
+            oos.writeObject("erfnerfiuerniuo");
             oos.close();
-
             ois.close();
             this.socket.close();
         } catch (IOException ex) {
