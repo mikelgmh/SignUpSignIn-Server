@@ -5,10 +5,10 @@
  */
 package signupsignin.server;
 
+import signupsignin.server.dao.DaoFactory;
 import interfaces.Signable;
 import message.Message;
 import message.TypeMessage;
-import signupsignin.server.dao.DaoFactory;
 
 /**
  *
