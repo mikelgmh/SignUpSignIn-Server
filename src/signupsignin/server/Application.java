@@ -31,9 +31,9 @@ public class Application {
                 new Worker(socket).start();
             }
         } catch (Exception e) {
-
+            
         } finally {
-
+            serverSocket.close();
         }
     }
 }

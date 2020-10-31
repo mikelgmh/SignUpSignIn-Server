@@ -36,7 +36,7 @@ public class ConnectionPool {
         return ds;
     }
 
-    public static synchronized Connection getConnection() throws ErrorConnectingDatabaseException {
+    public static Connection getConnection() throws ErrorConnectingDatabaseException {
         try {
             return getDataSource().getConnection();
         } catch (SQLException ex) {
