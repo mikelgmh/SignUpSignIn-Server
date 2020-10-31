@@ -6,16 +6,19 @@
 package signupsignin.server.dao;
 
 import exceptions.ErrorClosingDatabaseResources;
+import exceptions.ErrorConnectingServerException;
 import exceptions.ErrorConnectingDatabaseException;
 import exceptions.PasswordMissmatchException;
 import exceptions.QueryException;
+import exceptions.UserAlreadyExistException;
 import exceptions.UserNotFoundException;
 import interfaces.Signable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import user.User;
 
 /**
@@ -27,10 +30,15 @@ public class MySQLDaoImplementation implements Signable {
     private PreparedStatement ps;
     private ResultSet rs;
     private Connection con;
+    private final String searchUser = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
+    private final String insertUser = "INSERT INTO user(login,email,fullname,password,status,privilege) VALUES(?,?,?,?,?,?)";
     private final String checkUser = "SELECT * FROM USER WHERE LOGIN=?";
     private final String checkPassword = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
     private final String insertAccess = "UPDATE USER SET LASTACCESS =? WHERE LOGIN=?";
+    private final String checkIfUserExists = "SELECT * FROM USER WHERE LOGIN=? OR EMAIL=?";
 
+
+  
     @Override
     public User signIn(User user) throws ErrorConnectingDatabaseException, UserNotFoundException, PasswordMissmatchException, ErrorClosingDatabaseResources, QueryException {
         try {
@@ -70,13 +78,44 @@ public class MySQLDaoImplementation implements Signable {
         return user;
     }
 
+  
     @Override
-    public User signUp(User user) {
-        System.out.println("Usuario registrado");
-        return null;
+    public User signUp(User user) throws UserAlreadyExistException, QueryException,ErrorConnectingDatabaseException {
+        try {
+            this.con = ConnectionPool.getConnection();
+            this.checkifUserExists(user);
+
+            this.ps = con.prepareStatement(this.insertUser);
+            this.ps.setString(1, user.getLogin());
+            this.ps.setString(2, user.getEmail());
+            this.ps.setString(3, user.getFullName());
+            this.ps.setString(4, user.getPassword());
+            this.ps.setString(5, user.getStatus().toString());
+            this.ps.setString(6, user.getPrivilege().toString());
+            this.ps.execute();
+            this.closeConnection();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new QueryException();
+        }
+        return user;
     }
 
-    private void checkUser(User user) throws UserNotFoundException, SQLException {
+    private void checkifUserExists(User user) throws SQLException, UserAlreadyExistException {
+
+        this.ps = con.prepareStatement(this.checkIfUserExists);
+        this.ps.setString(1, user.getLogin());
+        this.ps.setString(2, user.getEmail());
+        this.rs = this.ps.executeQuery();
+
+        while (rs.next()) {
+            throw new UserAlreadyExistException(user);
+        }
+
+    }
+
+ private void checkUser(User user) throws UserNotFoundException, SQLException {
         ps = con.prepareStatement(checkUser);
         ps.setString(1, user.getLogin());
         rs = ps.executeQuery();
@@ -96,18 +135,10 @@ public class MySQLDaoImplementation implements Signable {
         ps.executeUpdate();
         ps.close();
     }
-    
-     private void closeConnection() throws SQLException {
+
+    private void closeConnection() throws SQLException {
         this.rs.close();
         this.ps.close();
         this.con.close();
     }
-
 }
-
-
-
-/*host=jdbc:mysql://localhost:3306/users?useSSL=false
-user=root
-password=
-driver=com.mysql.cj.jdbc.Driver*/
