@@ -36,9 +36,6 @@ public class MySQLDaoImplementation implements Signable {
     private final String checkUser = "SELECT * FROM USER WHERE LOGIN=?";
     private final String checkPassword = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
     private final String insertAccess = "UPDATE USER SET LASTACCESS =? WHERE LOGIN=?";
-    private final String checkIfUserExists = "SELECT * FROM USER WHERE LOGIN=? OR EMAIL=?";
-
-
   
     @Override
     public User signIn(User user) throws ErrorConnectingDatabaseException, UserNotFoundException, PasswordMissmatchException, ErrorClosingDatabaseResources, QueryException {
