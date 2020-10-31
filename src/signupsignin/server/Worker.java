@@ -19,11 +19,9 @@ import message.TypeMessage;
 import user.User;
 import java.io.IOException;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import message.Message;
 import java.net.Socket;
 import signupsignin.server.dao.DaoFactory;
 
@@ -53,48 +51,52 @@ public class Worker extends Thread {
     public void run() {
 
         try {
-            //read from socket to ObjectInputStream object
+            // read from socket to ObjectInputStream object
             ois = new ObjectInputStream(this.socket.getInputStream());
-            //convert ObjectInputStream object to Message
+            // convert ObjectInputStream object to Message
             this.message = (Message) ois.readObject();
             Signable dao = DaoFactory.getSignable("mysql");
             switch (this.message.getType()) {
-                case SIGN_UP: 
+                case SIGN_UP:
                     try {
-                    User user = dao.signUp(this.message.getUser());
-                    message = new Message(user, TypeMessage.REGISTER_OK);
-                } catch (UserAlreadyExistException ex) {
-                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                    message = new Message(this.message.getUser(), TypeMessage.USER_EXISTS);
-                } catch (ErrorConnectingDatabaseException ex) {
-                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                    message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
-                } catch (QueryException ex) {
-                    message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
-                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                break;
-                case SIGN_IN: 
+                        User user = dao.signUp(this.message.getUser());
+                        message = new Message(user, TypeMessage.REGISTER_OK);
+                    } catch (UserAlreadyExistException ex) {
+                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                        message = new Message(this.message.getUser(), TypeMessage.USER_EXISTS);
+                    } catch (ErrorConnectingDatabaseException ex) {
+                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                        message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
+                    } catch (QueryException ex) {
+                        message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
+                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
+
+                case SIGN_IN:
                     try {
-                    User user = dao.signIn(this.message.getUser());
-                    message = new Message(user, TypeMessage.REGISTER_OK);
-                } catch (ErrorConnectingDatabaseException ex) {
-                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                    message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
-                } catch (QueryException ex) {
-                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                    message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
-                } catch (UserNotFoundException ex) {
-                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                    message = new Message(this.message.getUser(), TypeMessage.USER_DOES_NOT_EXIST);
-                } catch (PasswordMissmatchException ex) {
-                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                    message = new Message(this.message.getUser(), TypeMessage.LOGIN_ERROR);
-                } catch (ErrorClosingDatabaseResources ex) {
-                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                    message = new Message(this.message.getUser(), TypeMessage.STOP_SERVER);
-                }
-                break;
+                        User user = dao.signIn(this.message.getUser());
+                        message = new Message(user, TypeMessage.LOGIN_OK);
+                    } catch (ErrorConnectingDatabaseException ex) {
+                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                        message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
+                    } catch (QueryException ex) {
+                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                        message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
+                    } catch (UserNotFoundException ex) {
+                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                        message = new Message(this.message.getUser(), TypeMessage.USER_DOES_NOT_EXIST);
+                    } catch (PasswordMissmatchException ex) {
+                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                        message = new Message(this.message.getUser(), TypeMessage.LOGIN_ERROR);
+                    } catch (ErrorClosingDatabaseResources ex) {
+                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                        message = new Message(this.message.getUser(), TypeMessage.STOP_SERVER);
+                    }
+                    break;
+
+                default:
+                    break;
             }
 
         } catch (IOException ex) {

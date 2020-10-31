@@ -6,7 +6,6 @@
 package signupsignin.server.dao;
 
 import exceptions.ErrorClosingDatabaseResources;
-import exceptions.ErrorConnectingServerException;
 import exceptions.ErrorConnectingDatabaseException;
 import exceptions.PasswordMissmatchException;
 import exceptions.QueryException;
@@ -17,8 +16,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import user.User;
 
 /**
@@ -36,32 +33,33 @@ public class MySQLDaoImplementation implements Signable {
     private final String checkUser = "SELECT * FROM USER WHERE LOGIN=?";
     private final String checkPassword = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
     private final String insertAccess = "UPDATE USER SET LASTACCESS =? WHERE LOGIN=?";
-  
+
     @Override
-    public User signIn(User user) throws ErrorConnectingDatabaseException, UserNotFoundException, PasswordMissmatchException, ErrorClosingDatabaseResources, QueryException {
+    public User signIn(User user) throws ErrorConnectingDatabaseException, UserNotFoundException,
+            PasswordMissmatchException, ErrorClosingDatabaseResources, QueryException {
         try {
             // Obtengo una conexión desde el pool de conexiones.
             con = ConnectionPool.getConnection();
 
-            //Hago comprobación de que exista el usuario.
+            // Hago comprobación de que exista el usuario.
             checkUser(user);
 
-            //Establezco el preparedstatement y ejecuto la query. 
+            // Establezco el preparedstatement y ejecuto la query.
             ps = con.prepareStatement(checkPassword);
             ps.setString(1, user.getLogin());
             ps.setString(2, user.getPassword());
             rs = ps.executeQuery();
 
-            //Controlo el error de la contraseña.
+            // Controlo el error de la contraseña.
             if (!rs.next()) {
                 throw new PasswordMissmatchException();
             }
-            //Obtengo datos que voy a devolver al clente.
+            // Obtengo datos que voy a devolver al clente.
             user.setFullName(rs.getString("FULLNAME"));
             user.setLastAccess(rs.getDate("LASTACCESS"));
 
-            insertAccesTime(user);
-            //Control de error de conexión/query incorrecta.
+            insertAccessTime(user);
+            // Control de error de conexión/query incorrecta.
         } catch (SQLException ex1) {
             throw new QueryException();
         } finally {
@@ -72,13 +70,12 @@ public class MySQLDaoImplementation implements Signable {
             }
         }
 
-        //Devuelvo user
+        // Devuelvo user
         return user;
     }
 
-  
     @Override
-    public User signUp(User user) throws UserAlreadyExistException, QueryException,ErrorConnectingDatabaseException {
+    public User signUp(User user) throws UserAlreadyExistException, QueryException, ErrorConnectingDatabaseException {
         try {
             this.con = ConnectionPool.getConnection();
             this.checkifUserExists(user);
@@ -110,10 +107,9 @@ public class MySQLDaoImplementation implements Signable {
         while (rs.next()) {
             throw new UserAlreadyExistException(user);
         }
-
     }
 
- private void checkUser(User user) throws UserNotFoundException, SQLException {
+    private void checkUser(User user) throws UserNotFoundException, SQLException {
         ps = con.prepareStatement(checkUser);
         ps.setString(1, user.getLogin());
         rs = ps.executeQuery();
@@ -122,10 +118,9 @@ public class MySQLDaoImplementation implements Signable {
         }
         rs.close();
         ps.close();
-
     }
 
-    private void insertAccesTime(User user) throws SQLException {
+    private void insertAccessTime(User user) throws SQLException {
         java.sql.Timestamp date = new java.sql.Timestamp(new java.util.Date().getTime());
         PreparedStatement ps = con.prepareStatement(insertAccess);
         ps.setTimestamp(1, date);
