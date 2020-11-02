@@ -62,41 +62,45 @@ public class Worker extends Thread {
             switch (this.message.getType()) {
                 case SIGN_UP:
                     try {
-                        User user = dao.signUp(this.message.getUser());
-                        message = new Message(user, TypeMessage.REGISTER_OK);
-                    } catch (UserAlreadyExistException ex) {
-                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                        message = new Message(this.message.getUser(), TypeMessage.USER_EXISTS);
-                    } catch (ErrorConnectingDatabaseException ex) {
-                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                        message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
-                    } catch (QueryException ex) {
-                        message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
-                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    break;
+                    User user = dao.signUp(this.message.getUser());
+                    message = new Message(user, TypeMessage.REGISTER_OK);
+                } catch (UserAlreadyExistException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                    message = new Message(this.message.getUser(), TypeMessage.USER_EXISTS);
+                } catch (ErrorConnectingDatabaseException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                    message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
+                } catch (QueryException ex) {
+                    message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ErrorConnectingServerException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
 
                 case SIGN_IN:
                     try {
-                        User user = dao.signIn(this.message.getUser());
-                        message = new Message(user, TypeMessage.LOGIN_OK);
-                    } catch (ErrorConnectingDatabaseException ex) {
-                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                        message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
-                    } catch (QueryException ex) {
-                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                        message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
-                    } catch (UserNotFoundException ex) {
-                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                        message = new Message(this.message.getUser(), TypeMessage.USER_DOES_NOT_EXIST);
-                    } catch (PasswordMissmatchException ex) {
-                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                        message = new Message(this.message.getUser(), TypeMessage.LOGIN_ERROR);
-                    } catch (ErrorClosingDatabaseResources ex) {
-                        Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-                        message = new Message(this.message.getUser(), TypeMessage.STOP_SERVER);
-                    }
-                    break;
+                    User user = dao.signIn(this.message.getUser());
+                    message = new Message(user, TypeMessage.LOGIN_OK);
+                } catch (ErrorConnectingDatabaseException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                    message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
+                } catch (QueryException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                    message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
+                } catch (UserNotFoundException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                    message = new Message(this.message.getUser(), TypeMessage.USER_DOES_NOT_EXIST);
+                } catch (PasswordMissmatchException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                    message = new Message(this.message.getUser(), TypeMessage.LOGIN_ERROR);
+                } catch (ErrorClosingDatabaseResources ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                    message = new Message(this.message.getUser(), TypeMessage.STOP_SERVER);
+                } catch (ErrorConnectingServerException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
 
                 default:
                     break;

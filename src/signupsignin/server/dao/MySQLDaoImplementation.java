@@ -134,7 +134,7 @@ public class MySQLDaoImplementation implements Signable {
 
     }
 
-    private void insertAccesTime(User user) throws SQLException {
+    private void insertAccessTime(User user) throws SQLException {
         java.sql.Timestamp date = new java.sql.Timestamp(new java.util.Date().getTime());
         PreparedStatement ps = con.prepareStatement(insertAccess);
         ps.setTimestamp(1, date);
