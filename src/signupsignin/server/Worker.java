@@ -7,6 +7,7 @@ package signupsignin.server;
 
 import exceptions.ErrorClosingDatabaseResources;
 import exceptions.ErrorConnectingDatabaseException;
+import exceptions.ErrorConnectingServerException;
 import exceptions.PasswordMissmatchException;
 import exceptions.QueryException;
 import exceptions.UserAlreadyExistException;
@@ -19,9 +20,11 @@ import message.TypeMessage;
 import user.User;
 import java.io.IOException;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import message.Message;
 import java.net.Socket;
 import signupsignin.server.dao.DaoFactory;
 
@@ -99,9 +102,7 @@ public class Worker extends Thread {
                     break;
             }
 
-        } catch (IOException ex) {
-            Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {

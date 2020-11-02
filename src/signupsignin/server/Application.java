@@ -10,7 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- *
+ * Application class.
  * @author Mikel
  */
 public class Application {
