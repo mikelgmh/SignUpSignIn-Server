@@ -22,14 +22,14 @@ public class ConnectionPool {
     private static final ResourceBundle rb = ResourceBundle.getBundle("config.config");
 
     public static DataSource getDataSource() {
+        //FIXME: Valores establecidos a machete. Cambiar a archivo de propiedades.	
         if (ds == null) {
             ds = new BasicDataSource();
             ds.setDriverClassName(rb.getString("driver"));
             ds.setUsername(rb.getString("user"));
             ds.setPassword(rb.getString("password"));
             ds.setUrl(rb.getString("host"));
-
-            // Establecer parametros adecuados
+            //Establecer parametros adecuados	
             ds.setMaxTotal(10);
             ds.setMaxWaitMillis(3000);
         }
