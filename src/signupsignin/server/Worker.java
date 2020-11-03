@@ -7,6 +7,7 @@ package signupsignin.server;
 
 import exceptions.ErrorClosingDatabaseResources;
 import exceptions.ErrorConnectingDatabaseException;
+import exceptions.ErrorConnectingServerException;
 import exceptions.PasswordMissmatchException;
 import exceptions.QueryException;
 import exceptions.UserAlreadyExistException;
@@ -25,6 +26,7 @@ import java.io.ObjectOutputStream;
 
 import message.Message;
 import java.net.Socket;
+import java.util.ResourceBundle;
 import signupsignin.server.dao.DaoFactory;
 
 /**
@@ -36,6 +38,7 @@ public class Worker extends Thread {
     private Socket socket;
     private Message message = null;
     private ObjectInputStream ois;
+    private ResourceBundle rb = ResourceBundle.getBundle("config.config");
 
     public Worker(Socket socket) {
         this.socket = socket;
@@ -51,13 +54,13 @@ public class Worker extends Thread {
 
     @Override
     public void run() {
-
+        Application.sumConnection();
         try {
             //read from socket to ObjectInputStream object
             ois = new ObjectInputStream(this.socket.getInputStream());
             //convert ObjectInputStream object to Message
             this.message = (Message) ois.readObject();
-            Signable dao = DaoFactory.getSignable("mysql");
+            Signable dao = DaoFactory.getSignable(rb.getString("DATABASE_TYPE"));
             switch (this.message.getType()) {
                 case SIGN_UP: 
                     try {
@@ -71,6 +74,8 @@ public class Worker extends Thread {
                     message = new Message(this.message.getUser(), TypeMessage.DATABASE_ERROR);
                 } catch (QueryException ex) {
                     message = new Message(this.message.getUser(), TypeMessage.QUERY_ERROR);
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ErrorConnectingServerException ex) {
                     Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
@@ -93,13 +98,14 @@ public class Worker extends Thread {
                 } catch (ErrorClosingDatabaseResources ex) {
                     Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
                     message = new Message(this.message.getUser(), TypeMessage.STOP_SERVER);
+                } catch (ErrorConnectingServerException ex) {
+                    Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
+
             }
 
-        } catch (IOException ex) {
-            Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
@@ -108,6 +114,7 @@ public class Worker extends Thread {
                 oos.close();
                 ois.close();
                 this.socket.close();
+                Application.sumConnection();
             } catch (IOException ex) {
                 Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
             }
