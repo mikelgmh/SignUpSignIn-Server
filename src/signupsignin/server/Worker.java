@@ -26,6 +26,7 @@ import java.io.ObjectOutputStream;
 
 import message.Message;
 import java.net.Socket;
+import java.util.ResourceBundle;
 import signupsignin.server.dao.DaoFactory;
 
 /**
@@ -37,6 +38,7 @@ public class Worker extends Thread {
     private Socket socket;
     private Message message = null;
     private ObjectInputStream ois;
+    private ResourceBundle rb = ResourceBundle.getBundle("config.config");
 
     public Worker(Socket socket) {
         this.socket = socket;
@@ -52,15 +54,15 @@ public class Worker extends Thread {
 
     @Override
     public void run() {
-
+        Application.sumConnection();
         try {
-            // read from socket to ObjectInputStream object
+            //read from socket to ObjectInputStream object
             ois = new ObjectInputStream(this.socket.getInputStream());
-            // convert ObjectInputStream object to Message
+            //convert ObjectInputStream object to Message
             this.message = (Message) ois.readObject();
-            Signable dao = DaoFactory.getSignable("mysql");
+            Signable dao = DaoFactory.getSignable(rb.getString("DATABASE_TYPE"));
             switch (this.message.getType()) {
-                case SIGN_UP:
+                case SIGN_UP: 
                     try {
                     User user = dao.signUp(this.message.getUser());
                     message = new Message(user, TypeMessage.REGISTER_OK);
@@ -77,8 +79,7 @@ public class Worker extends Thread {
                     Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
-
-                case SIGN_IN:
+                case SIGN_IN: 
                     try {
                     User user = dao.signIn(this.message.getUser());
                     message = new Message(user, TypeMessage.LOGIN_OK);
@@ -102,8 +103,6 @@ public class Worker extends Thread {
                 }
                 break;
 
-                default:
-                    break;
             }
 
         } catch (IOException | ClassNotFoundException ex) {
@@ -115,6 +114,7 @@ public class Worker extends Thread {
                 oos.close();
                 ois.close();
                 this.socket.close();
+                Application.sumConnection();
             } catch (IOException ex) {
                 Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
             }
