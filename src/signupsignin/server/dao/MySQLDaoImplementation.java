@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package signupsignin.server.dao;
 
 import exceptions.ErrorClosingDatabaseResources;
@@ -22,7 +17,7 @@ import user.User;
 
 /**
  *
- * @author Imanol
+ * @author Imanol, Mikel
  */
 public class MySQLDaoImplementation implements Signable {
 
