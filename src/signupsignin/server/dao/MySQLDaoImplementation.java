@@ -6,7 +6,6 @@
 package signupsignin.server.dao;
 
 import exceptions.ErrorClosingDatabaseResources;
-import exceptions.ErrorConnectingServerException;
 import exceptions.ErrorConnectingDatabaseException;
 import exceptions.PasswordMissmatchException;
 import exceptions.QueryException;
@@ -30,7 +29,6 @@ public class MySQLDaoImplementation implements Signable {
     private PreparedStatement ps;
     private ResultSet rs;
     private Connection con;
-    private final String searchUser = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
     private final String insertUser = "INSERT INTO user(login,email,fullname,password,status,privilege) VALUES(?,?,?,?,?,?)";
     private final String checkUser = "SELECT * FROM USER WHERE LOGIN=?";
     private final String checkPassword = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
@@ -138,8 +136,14 @@ public class MySQLDaoImplementation implements Signable {
     }
 
     private void closeConnection() throws SQLException {
-        this.rs.close();
-        this.ps.close();
-        this.con.close();
+        if (this.rs != null) {
+            this.rs.close();
+        }
+        if (this.ps != null) {
+            this.ps.close();
+        }
+        if (this.con != null) {
+            this.con.close();
+        }
     }
 }
