@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import user.User;
 
 /**
- *
+ * It does the querys with the database.
  * @author Imanol, Mikel
  */
 public class MySQLDaoImplementation implements Signable {
@@ -29,7 +29,16 @@ public class MySQLDaoImplementation implements Signable {
     private final String checkPassword = "SELECT * FROM USER WHERE LOGIN=? AND PASSWORD=?";
     private final String insertAccess = "UPDATE USER SET LASTACCESS =? WHERE LOGIN=?";
     private final String checkIfUserExists = "SELECT * FROM USER WHERE LOGIN=? OR EMAIL=?";
-
+    /**
+     * It does the querys to check if the login and the password are correct with the ones in the database.
+     * @param user it contains the login, password data.
+     * @return the user with the information that the database have returned.
+     * @throws ErrorConnectingDatabaseException if it doesn't connect with the database.
+     * @throws UserNotFoundException if an user doesn't exist in the database.
+     * @throws PasswordMissmatchException if the password is not the correct one for that user.
+     * @throws ErrorClosingDatabaseResources if it fails closing the querys.
+     * @throws QueryException when it execute the query it fails.
+     */
     @Override
     public User signIn(User user) throws ErrorConnectingDatabaseException, UserNotFoundException, PasswordMissmatchException, ErrorClosingDatabaseResources, QueryException {
         try {
@@ -68,7 +77,14 @@ public class MySQLDaoImplementation implements Signable {
         //Devuelvo user
         return user;
     }
-
+    /**
+     * It does the check if user doesn't exist and the new user is added to the database.
+     * @param user with data to register into the database.
+     * @return user with the correct data.
+     * @throws UserAlreadyExistException if the user exist in the database.
+     * @throws QueryException if the query fails.
+     * @throws ErrorConnectingDatabaseException if the connection to the database fails.
+     */
     @Override
     public User signUp(User user) throws UserAlreadyExistException, QueryException, ErrorConnectingDatabaseException {
         try {
@@ -98,7 +114,12 @@ public class MySQLDaoImplementation implements Signable {
         }
         return user;
     }
-
+    /**
+     * It checks if the user exists in the database.
+     * @param user with data to register or login into the database.
+     * @throws SQLException if an error have happened with the query or the database.  
+     * @throws UserAlreadyExistException if the user already exist in the database.
+     */
     private void checkifUserExists(User user) throws SQLException, UserAlreadyExistException {
 
         this.ps = con.prepareStatement(this.checkIfUserExists);
@@ -111,7 +132,12 @@ public class MySQLDaoImplementation implements Signable {
         }
 
     }
-
+    /**
+     * It checks if the user is in the database.
+     * @param user with data to register or login into the database.
+     * @throws UserNotFoundException If the user is not found in the database.
+     * @throws SQLException If an error have happened with the query or the database. 
+     */
     private void checkUser(User user) throws UserNotFoundException, SQLException {
         ps = con.prepareStatement(checkUser);
         ps.setString(1, user.getLogin());
@@ -120,7 +146,11 @@ public class MySQLDaoImplementation implements Signable {
             throw new UserNotFoundException();
         }
     }
-
+    /**
+     * It is to change the last access of the user.
+     * @param user with data to register or login into the database.
+     * @throws SQLException If an error have happened with the query or the database. 
+     */
     private void insertAccesTime(User user) throws SQLException {
         java.sql.Timestamp date = new java.sql.Timestamp(new java.util.Date().getTime());
         PreparedStatement ps = con.prepareStatement(insertAccess);
@@ -129,7 +159,10 @@ public class MySQLDaoImplementation implements Signable {
         ps.executeUpdate();
         ps.close();
     }
-
+    /**
+     * It close the connection.
+     * @throws SQLException if an error have happened with the query or the database. 
+     */
     private void closeConnection() throws SQLException {
         if (this.rs != null) {
             this.rs.close();

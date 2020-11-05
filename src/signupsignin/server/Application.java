@@ -8,7 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Application class.
+ * Application class where it is created the server socket 
+ * and then it stay listening indefinitely until it recieve an exit call.
  *
  * @author Mikel
  */
@@ -23,8 +24,10 @@ public class Application {
     private static Integer currentConnections = 0;
 
     //socket server port on which it will listen
+  
     public static void main(String args[]) throws IOException {
         try {
+           
             logger.log(Level.INFO, "Starting Server.");
             //create the socket server object
             serverSocket = new ServerSocket(Integer.parseInt(rb.getString("SERVER_SOCKET_PORT")));
@@ -43,11 +46,15 @@ public class Application {
         }
 
     }
-
+    /**
+     * It is a meter that plus a connection when a thread starts. 
+     */
     public synchronized static void sumConnection() {
         currentConnections++;
     }
-
+    /**
+     * It is a meter that substract a connection when a thread ends.
+     */
     public synchronized static void substractConnection() {
         currentConnections--;
     }

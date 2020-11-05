@@ -1,6 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Classes that open the connection with the database, select the type of implementation
+ * and the querys with the database.
  */
 package signupsignin.server.dao;

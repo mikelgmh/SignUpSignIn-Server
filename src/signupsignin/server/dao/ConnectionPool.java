@@ -9,7 +9,8 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
- *
+ * This class takes the connection info from the config file and with it, 
+ * it opens the connection with the database.
  * @author Imanol
  */
 public class ConnectionPool {
@@ -18,7 +19,10 @@ public class ConnectionPool {
 
     private static BasicDataSource ds = null;
     private static final ResourceBundle rb = ResourceBundle.getBundle("config.config");
-
+    /**
+     * It set the parameters for the connection.
+     * @return information from the connection.
+     */
     public static DataSource getDataSource() {
         if (ds == null) {
             ds = new BasicDataSource();
@@ -27,12 +31,15 @@ public class ConnectionPool {
             ds.setPassword(rb.getString("password"));
             ds.setUrl(rb.getString("host"));
             //Establecer parametros adecuados	
-            ds.setMaxTotal(10);
             ds.setMaxWaitMillis(3000);
         }
         return ds;
     }
-
+       /**
+        * 
+        * @return an active connection.
+        * @throws ErrorConnectingDatabaseException if it can't connect to the database. 
+        */
     public static Connection getConnection() throws ErrorConnectingDatabaseException {
         try {
             return getDataSource().getConnection();
