@@ -2,6 +2,7 @@ host=jdbc:mysql://localhost:3306/reto1
 user=root
 password=
 driver=com.mysql.cj.jdbc.Driver
-
+DATABASE_TYPE=mysql
 # SOCKETS
 SERVER_SOCKET_PORT=3333
+MAX_CONNECTIONS=10
