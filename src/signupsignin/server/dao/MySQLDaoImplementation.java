@@ -135,7 +135,9 @@ public class MySQLDaoImplementation implements Signable {
      * @param user with data to register or login into the database.
      * @throws SQLException if an error have happened with the query or the
      * database.
-     * @throws UserAlreadyExistException if the user already exist in the
+     * @throws UserAlreadyExistException if the user already exist in the database.
+     * @throws EmailAlreadyExistsException If the email exists in the database.
+     * @throws UserAndEmailAlreadyExistException if both exist in the database.
      * database.
      */
     private void checkifUserExists(User user) throws SQLException, UserAlreadyExistException, EmailAlreadyExistsException, UserAndEmailAlreadyExistException {
